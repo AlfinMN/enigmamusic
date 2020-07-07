@@ -27,6 +27,26 @@ func (s SongRepoImpl) GetAllSong() ([]*models.Song, error) {
 	}
 	return dataSong, nil
 }
+func (a SongRepoImpl) GetGenre(genremusik string) ([]*models.Song, error) {
+	dataGenre := []*models.Song{}
+	query := "SELECT * FROM lagu WHERE genre=? "
+	data, err := a.db.Query(query, genremusik)
+	if err != nil {
+		return nil, err
+	}
+	for data.Next() {
+		genre := models.Song{}
+		var err = data.Scan(&genre.Id, &genre.Title, &genre.Artist, &genre.Album, &genre.Genre, &genre.ReleaseYear)
+		if err != nil {
+			return nil, err
+		}
+
+		dataGenre = append(dataGenre, &genre)
+
+	}
+	return dataGenre, nil
+
+}
 
 func (s SongRepoImpl) AddSong(song models.Song) error {
 
@@ -78,18 +98,6 @@ func (s *SongRepoImpl) DeleteSong(id string) error {
 
 	stmt.Close()
 	return tx.Commit()
-}
-
-func (a SongRepoImpl) GetGenre(genremusik string) (models.Song, error) {
-	var genre models.Song
-	query := "SELECT * FROM lagu WHERE genre=? group by id"
-	err := a.db.QueryRow(query, genremusik).Scan(&genre.Id, &genre.Title, &genre.Artist, &genre.Album, &genre.Genre, &genre.ReleaseYear)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return genre, nil
 }
 
 func InitSongRepoImpl(db *sql.DB) SongRepositories {

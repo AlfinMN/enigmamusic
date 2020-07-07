@@ -18,7 +18,13 @@ func (s SongUsecaseImpl) GetSongs() ([]*models.Song, error) {
 
 	return song, nil
 }
-
+func (s SongUsecaseImpl) GetGenre(genremusik string) ([]*models.Song, error) {
+	genre, err := s.songRepo.GetGenre(genremusik)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return genre, nil
+}
 func (s SongUsecaseImpl) AddDataSong(song models.Song) error {
 	err := s.songRepo.AddSong(song)
 	if err != nil {
@@ -42,14 +48,6 @@ func (s SongUsecaseImpl) DeleteDataSong(id string) error {
 	}
 
 	return nil
-}
-
-func (s SongUsecaseImpl) GetGenre(genremusik string) (models.Song, error) {
-	genre, err := s.songRepo.GetGenre(genremusik)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return genre, nil
 }
 
 func InitSongUseCase(songRepo repositories.SongRepositories) SongUseCase {
